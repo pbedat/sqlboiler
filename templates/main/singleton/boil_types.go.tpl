@@ -75,7 +75,7 @@ It only titlecases the EnumValue portion if it's snake-cased.
 				($onceNull.Has $name)
 			)
 		) -}}
-			{{- if and (gt (len $vals) 0) (isEnumNormal $vals)}}
+			{{- if gt (len $vals) 0}}
 				{{- if $isNamed -}}
 					{{ $enumName = titleCase $name}}
 				{{- else -}}
@@ -97,12 +97,8 @@ It only titlecases the EnumValue portion if it's snake-cased.
 					// Enum values for {{$enumName}}
 					const (
 					{{range $val := $vals -}}
-						{{- $valStripped := stripWhitespace $val -}}
-						{{- $enumValue := $valStripped -}}
-						{{- if shouldTitleCaseEnum $valStripped -}}
-							{{$enumValue = titleCase $valStripped}}
-						{{- end -}}
-						{{$enumName}}{{$enumValue}} {{$enumType}} = "{{$val}}"
+						{{- $enumValue := titleCase $val -}}
+						{{$enumName}}{{$enumValue}} {{$enumType}} = {{printf "%q" $val}}
 						{{$allvals = printf "%s%s%s,\n" $allvals $enumName $enumValue -}}
 					{{end -}}
 					)
@@ -125,12 +121,7 @@ It only titlecases the EnumValue portion if it's snake-cased.
 								{{- $enumValues = printf "%s%s" $enumValues ", " -}}
 							{{- end -}}
 
-							{{- $valStripped := stripWhitespace $val -}}
-							{{- $enumValue := $valStripped -}}
-							{{- if shouldTitleCaseEnum $valStripped -}}
-								{{- $enumValue = titleCase $valStripped -}}
-							{{- end -}}
-
+							{{- $enumValue := titleCase $val -}}
 							{{- $enumValues = printf "%s%s%s" $enumValues $enumName $enumValue -}}
 						{{- end}}
 						switch e {
@@ -265,7 +256,7 @@ It only titlecases the EnumValue portion if it's snake-cased.
 					}
 				{{end -}}
 			{{else}}
-				// Enum values for {{$enumName}} are not proper Go identifiers, cannot emit constants
+				// Enum values for {{$table.Name}} {{$col.Name}} are not proper Go identifiers, cannot emit constants
 			{{- end -}}
 			{{/* Save column type name after generation.
 			 Needs to be at the bottom because we check for the first iteration

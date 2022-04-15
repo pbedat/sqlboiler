@@ -19,11 +19,30 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 - Removed the `--no-rows-affected` flag. Methods will now always return the rows affected.
 - Removed the `--no-hooks` flag. Models will always have hooks. If unused, it will remain a nil slice.
 
-## [Unreleased]
+## [v4.10.2] - 2022-04-15
+
+### Fixes
+
+- Fix performance issue when scanning pgeo point (thanks @ivokanchev)
+
+## [v4.10.1] - 2022-04-15
+
+### Fixes
+
+- Properly assign new query object in models.Pural()
+
+## [v4.10.0] - 2022-04-15
+
+### Added
+
+- Add config options to allow user defined rules for inflections
 
 ### Fixes
 
 - Don't generate test suites for views
+- Properly assign new query object in models.Pural()
+- Fix false negatives for enum values
+- Strip non alphanumeric characters when title casing.
 
 ## [v4.9.2] - 2022-04-11
 
