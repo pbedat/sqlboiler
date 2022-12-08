@@ -46,7 +46,7 @@ func {{$alias.UpSingular}}Exists({{if .NoContext}}exec boil.Executor{{else}}ctx 
 	{{if .Dialect.UseCaseWhenExistsClause -}}
 	sql := "select case when exists(select top(1) 1 from {{$schemaTable}} where {{if .Dialect.UseIndexPlaceholders}}{{whereClause .LQ .RQ 1 .Table.PKey.Columns}}{{else}}{{whereClause .LQ .RQ 0 .Table.PKey.Columns}}{{end}}) then 1 else 0 end"
 	{{- else -}}
-	sql := "select exists(select 1 from {{$schemaTable}} where {{if .Dialect.UseIndexPlaceholders}}{{whereClause .LQ .RQ 1 .Table.PKey.Columns}}{{else}}{{whereClause .LQ .RQ 0 .Table.PKey.Columns}}{{end}}{{if and .AddSoftDeletes $canSoftDelete}} and {{"deleted_at" | $.Quotes}} is null{{end}} limit 1)"
+	sql := "select exists(select 1 from {{$schemaTable}} where {{if .Dialect.UseIndexPlaceholders}}{{whereClause .LQ .RQ 1 .Table.PKey.Columns}}{{else}}{{whereClause .LQ .RQ 0 .Table.PKey.Columns}}{{end}}{{if and .AddSoftDeletes $canSoftDelete}} and {{or $.AutoColumns.Deleted "deleted_at" | $.Quotes}} is null{{end}} limit 1)"
 	{{- end}}
 
 	{{if .NoContext -}}
@@ -74,6 +74,11 @@ func {{$alias.UpSingular}}Exists({{if .NoContext}}exec boil.Executor{{else}}ctx 
 	}
 
 	return exists, nil
+}
+
+// Exists checks if the {{$alias.UpSingular}} row exists.
+func (o *{{$alias.UpSingular}}) Exists({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}) (bool, error) {
+	return {{$alias.UpSingular}}Exists({{if .NoContext}}exec{{else}}ctx, exec{{end}}, o.{{$.Table.PKey.Columns | stringMap (aliasCols $alias) | join ", o."}})
 }
 
 {{- end -}}
